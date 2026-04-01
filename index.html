@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YPFOPS — 智慧工廠雲端 ERP 管理系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #0f2040;
+    --blue: #1a56db;
+    --blue2: #2563eb;
+    --cyan: #06b6d4;
+    --accent: #38bdf8;
+    --gold: #f59e0b;
+    --white: #f8fafc;
+    --muted: #94a3b8;
+    --border: rgba(255,255,255,0.08);
+    --card: rgba(255,255,255,0.04);
+    --card-hover: rgba(255,255,255,0.07);
+    --gradient: linear-gradient(135deg, #1a56db 0%, #06b6d4 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── Noise texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── Grid lines ── */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(26,86,219,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,86,219,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  section, nav, footer { position: relative; z-index: 1; }
+
+  /* ── Nav ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10,22,40,0.85);
+    backdrop-filter: blur(20px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--cyan); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn-outline {
+    padding: 10px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--white);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-primary {
+    padding: 10px 24px;
+    background: var(--gradient);
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 20px rgba(26,86,219,0.4);
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 5%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(26,86,219,0.15) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: rgba(6,182,212,0.1);
+    border: 1px solid rgba(6,182,212,0.3);
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 600;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(40px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero h1 .highlight {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--muted);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-hero {
+    padding: 16px 36px;
+    background: var(--gradient);
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 8px 32px rgba(26,86,219,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(26,86,219,0.6); }
+
+  .btn-hero-ghost {
+    padding: 16px 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--white);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 64px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Section common ── */
+  .section { padding: 100px 5%; }
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── Modules Grid ── */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 60px;
+  }
+
+  .module-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .module-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 16px;
+  }
+
+  .module-card:hover { border-color: rgba(26,86,219,0.4); transform: translateY(-4px); }
+  .module-card:hover::before { opacity: 0.05; }
+
+  .module-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+    position: relative;
+  }
+
+  .module-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .module-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .module-tag {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(6,182,212,0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(6,182,212,0.2);
+    position: relative;
+  }
+
+  /* ── Pricing ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 60px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .pricing-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    transition: all 0.3s;
+  }
+
+  .pricing-card.featured {
+    background: linear-gradient(135deg, rgba(26,86,219,0.15), rgba(6,182,212,0.08));
+    border-color: rgba(26,86,219,0.4);
+    transform: scale(1.03);
+    box-shadow: 0 20px 60px rgba(26,86,219,0.2);
+  }
+
+  .pricing-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--gradient);
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .pricing-plan {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .pricing-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    margin: 16px 0 4px;
+    line-height: 1;
+  }
+
+  .pricing-price span { font-size: 18px; color: var(--muted); font-weight: 400; }
+
+  .pricing-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .pricing-features {
+    list-style: none;
+    margin-bottom: 32px;
+  }
+
+  .pricing-features li {
+    font-size: 14px;
+    color: var(--muted);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--cyan);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .pricing-features li.disabled { opacity: 0.4; }
+  .pricing-features li.disabled::before { content: '✕'; color: var(--muted); }
+
+  /* ── Industries ── */
+  .industry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .industry-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .industry-card:hover { border-color: rgba(6,182,212,0.3); background: var(--card-hover); }
+  .industry-icon { font-size: 32px; margin-bottom: 12px; }
+  .industry-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .industry-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── CTA Section ── */
+  .cta-section {
+    padding: 100px 5%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(26,86,219,0.2) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-box {
+    background: linear-gradient(135deg, rgba(26,86,219,0.12), rgba(6,182,212,0.06));
+    border: 1px solid rgba(26,86,219,0.3);
+    border-radius: 24px;
+    padding: 64px 40px;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  .footer-logo span { color: var(--cyan); }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--white); }
+
+  .footer-copy {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: var(--gradient);
+    border-radius: 2px;
+    margin: 20px 0 40px;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Feature comparison ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 48px;
+    font-size: 14px;
+  }
+
+  .compare-table th {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  .compare-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .compare-table td:first-child { color: var(--white); font-weight: 500; }
+  .compare-table tr:hover td { background: var(--card); }
+
+  .check { color: var(--cyan); font-weight: 700; }
+  .cross { color: #ef4444; }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hero-stats { gap: 24px; }
+    .pricing-card.featured { transform: none; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="logo">YPF<span>OPS</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">功能</a></li>
+    <li><a href="#industries">適用產業</a></li>
+    <li><a href="#pricing">方案價格</a></li>
+    <li><a href="#contact">聯絡我們</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="https://ypfops.com" class="btn-outline">登入系統</a>
+    <a href="#pricing" class="btn-primary">免費試用 14 天</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">🚀 雲端 ERP · 即開即用 · 無需安裝</div>
+  <h1>
+    讓工廠管理<br />
+    <span class="highlight">智慧化、數位化</span>
+  </h1>
+  <p>YPFOPS 是專為製造業、貿易商、倉儲物流設計的雲端 ERP 系統。從庫存、生產、出貨到報表，一站式整合，手機電腦都能用。</p>
+  <div class="hero-cta">
+    <a href="#pricing" class="btn-hero">立即免費試用 →</a>
+    <a href="#features" class="btn-hero-ghost">了解更多功能</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">核心功能模組</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">14天</div>
+      <div class="stat-label">免費試用期</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">99.9%</div>
+      <div class="stat-label">系統可用率</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">雲端即時同步</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="section-label">核心功能 · Core Features</div>
+  <h2 class="section-title">工廠需要的，<br />我們都有</h2>
+  <div class="divider"></div>
+  <p class="section-sub">從倉庫到生產線，從出貨到客戶管理，YPFOPS 涵蓋製造業完整作業流程。</p>
+
+  <div class="modules-grid">
+    <div class="module-card">
+      <span class="module-icon">📦</span>
+      <div class="module-title">倉儲管理 WMS</div>
+      <div class="module-desc">即時庫存追蹤、入出庫記錄、安全庫存警示、批量商品匯入、盤點調整，支援條碼搜尋。</div>
+      <span class="module-tag">庫存 · 入出庫 · 盤點</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">🏭</span>
+      <div class="module-title">生產管理 MES</div>
+      <div class="module-desc">工單建立、生產進度回報、完工入庫（自動/手動），從計劃到完工全程追蹤。</div>
+      <span class="module-tag">工單 · 進度 · 完工入庫</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">🚚</span>
+      <div class="module-title">出貨管理 SHP</div>
+      <div class="module-desc">出貨單建立、品項管理、待出貨追蹤、確認出貨流程，與倉儲即時連動。</div>
+      <span class="module-tag">出貨單 · 品項 · 狀態追蹤</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">👥</span>
+      <div class="module-title">客戶管理 CRM</div>
+      <div class="module-desc">客戶資料集中管理，聯絡人、電話、地址一鍵查詢，搭配權限控管確保資料安全。</div>
+      <span class="module-tag">客戶 · 聯絡人 · 權限保護</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">📊</span>
+      <div class="module-title">報表分析 RPT</div>
+      <div class="module-desc">庫存警示、入出庫趨勢圖、生產完成率、庫存周轉率，老闆一目了然的經營數據。</div>
+      <span class="module-tag">圖表 · KPI · 趨勢分析</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">🔧</span>
+      <div class="module-title">機械維修通報</div>
+      <div class="module-desc">機台報修、故障記錄、維修人員指派、停機狀態追蹤，支援中英雙語供移工使用。</div>
+      <span class="module-tag">報修 · 機台管理 · 中英文</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">🏆</span>
+      <div class="module-title">5S 管理系統</div>
+      <div class="module-desc">每週 5S 評分表，管理員指派填寫人員，追蹤整理、整頓、清掃、清潔、素養各項評分。</div>
+      <span class="module-tag">5S · 週報 · 品質文化</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">📋</span>
+      <div class="module-title">任務管理系統</div>
+      <div class="module-desc">主管指派任務給員工，員工可回報進度、標記完成或請求協助，主管即時看到通知。</div>
+      <span class="module-tag">任務指派 · 進度追蹤 · 協作</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">👤</span>
+      <div class="module-title">人員權限管理</div>
+      <div class="module-desc">16 種職位設定、模組細項權限勾選、批量員工建立、首次登入強制改密碼。</div>
+      <span class="module-tag">權限 · 職位 · 帳號管理</span>
+    </div>
+    <div class="module-card">
+      <span class="module-icon">🔒</span>
+      <div class="module-title">資料安全防護</div>
+      <div class="module-desc">全頁面員工姓名水印防截圖外洩、操作日誌追蹤、多租戶資料完全隔離。</div>
+      <span class="module-tag">水印 · 日誌 · 資料隔離</span>
+    </div>
+  </div>
+</section>
+
+<!-- Industries -->
+<section class="section" id="industries" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="section-label">適用產業 · Industries</div>
+    <h2 class="section-title">為各類製造業<br />量身打造</h2>
+    <div class="divider"></div>
+    <div class="industry-grid">
+      <div class="industry-card">
+        <div class="industry-icon">🏗️</div>
+        <div class="industry-name">製造業工廠</div>
+        <div class="industry-sub">生產 · 倉儲 · 品管</div>
+      </div>
+      <div class="industry-card">
+        <div class="industry-icon">🏢</div>
+        <div class="industry-name">中小型貿易商</div>
+        <div class="industry-sub">進出口 · 客戶 · 出貨</div>
+      </div>
+      <div class="industry-card">
+        <div class="industry-icon">📦</div>
+        <div class="industry-name">倉儲物流</div>
+        <div class="industry-sub">庫存 · 進出 · 追蹤</div>
+      </div>
+      <div class="industry-card">
+        <div class="industry-icon">🍱</div>
+        <div class="industry-name">食品加工業</div>
+        <div class="industry-sub">批號 · 保存期 · 衛生</div>
+      </div>
+      <div class="industry-card">
+        <div class="industry-icon">⚡</div>
+        <div class="industry-name">電子零件業</div>
+        <div class="industry-sub">BOM · 生產 · 品管</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing">
+  <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+    <div class="section-label">方案價格 · Pricing</div>
+    <h2 class="section-title">透明定價<br />無隱藏費用</h2>
+    <div class="divider" style="margin: 20px auto 40px;"></div>
+    <p class="section-sub" style="margin: 0 auto 60px;">所有方案均含免費 14 天試用，到期前不收費，無需信用卡。</p>
+
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="pricing-plan">入門方案</div>
+        <div style="font-size: 13px; color: var(--muted); margin-bottom: 4px;">Starter</div>
+        <div class="pricing-price">NT$1,490<span>/月</span></div>
+        <div class="pricing-desc">適合 5 人以下小型工廠或新創公司</div>
+        <ul class="pricing-features">
+          <li>最多 5 位使用者</li>
+          <li>倉儲管理 WMS</li>
+          <li>出貨管理</li>
+          <li>基本報表</li>
+          <li>手機版介面</li>
+          <li class="disabled">生產管理 MES</li>
+          <li class="disabled">機械維修通報</li>
+          <li class="disabled">5S 管理系統</li>
+          <li class="disabled">任務管理</li>
+        </ul>
+        <a href="#contact" class="btn-hero-ghost" style="display: block; text-align: center; border-radius: 10px; padding: 14px;">免費試用 14 天</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card featured">
+        <div class="pricing-badge">最受歡迎</div>
+        <div class="pricing-plan">專業方案</div>
+        <div style="font-size: 13px; color: var(--muted); margin-bottom: 4px;">Professional</div>
+        <div class="pricing-price">NT$3,490<span>/月</span></div>
+        <div class="pricing-desc">適合 20 人以下中型工廠，功能完整</div>
+        <ul class="pricing-features">
+          <li>最多 20 位使用者</li>
+          <li>全部 10 個功能模組</li>
+          <li>生產管理 MES</li>
+          <li>機械維修通報</li>
+          <li>5S 管理系統</li>
+          <li>任務管理系統</li>
+          <li>操作日誌追蹤</li>
+          <li>批量員工建立</li>
+          <li class="disabled">白標自訂 Logo</li>
+        </ul>
+        <a href="#contact" class="btn-hero" style="display: block; text-align: center; border-radius: 10px; padding: 14px;">免費試用 14 天 →</a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card">
+        <div class="pricing-plan">企業方案</div>
+        <div style="font-size: 13px; color: var(--muted); margin-bottom: 4px;">Enterprise</div>
+        <div class="pricing-price" style="font-size: 36px;">洽談報價</div>
+        <div class="pricing-desc">無使用者上限，客製化需求，專屬客服</div>
+        <ul class="pricing-features">
+          <li>無使用者上限</li>
+          <li>全部功能模組</li>
+          <li>白標自訂 Logo</li>
+          <li>客製化功能開發</li>
+          <li>專屬帳號管理員</li>
+          <li>優先技術支援</li>
+          <li>資料備份與還原</li>
+          <li>API 串接服務</li>
+          <li>教育訓練課程</li>
+        </ul>
+        <a href="#contact" class="btn-outline" style="display: block; text-align: center; border-radius: 10px; padding: 14px; border-color: rgba(255,255,255,0.2);">聯絡我們洽談</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Compare -->
+<section class="section" style="border-top: 1px solid var(--border);">
+  <div style="max-width: 900px; margin: 0 auto;">
+    <div class="section-label">vs 傳統 ERP</div>
+    <h2 class="section-title">為什麼選 YPFOPS？</h2>
+    <div class="divider"></div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>比較項目</th>
+          <th style="color: var(--cyan);">YPFOPS</th>
+          <th>傳統 ERP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>導入時間</td><td><span class="check">✓</span> 當天即可使用</td><td><span class="cross">✕</span> 3〜12 個月</td></tr>
+        <tr><td>費用</td><td><span class="check">✓</span> 月租 NT$1,490 起</td><td><span class="cross">✕</span> 數十萬〜數百萬</td></tr>
+        <tr><td>硬體需求</td><td><span class="check">✓</span> 只需瀏覽器</td><td><span class="cross">✕</span> 需購買伺服器</td></tr>
+        <tr><td>手機使用</td><td><span class="check">✓</span> 全面支援</td><td><span class="cross">✕</span> 多數不支援</td></tr>
+        <tr><td>維護費用</td><td><span class="check">✓</span> 包含在月費內</td><td><span class="cross">✕</span> 額外年費維護</td></tr>
+        <tr><td>更新升級</td><td><span class="check">✓</span> 自動雲端更新</td><td><span class="cross">✕</span> 需另外付費升級</td></tr>
+        <tr><td>多語系支援</td><td><span class="check">✓</span> 中英雙語介面</td><td><span class="cross">✕</span> 通常僅中文</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-box">
+    <div class="section-label" style="text-align: center;">立即開始 · Get Started</div>
+    <h2 class="section-title">免費試用 14 天<br />無需信用卡</h2>
+    <p style="color: var(--muted); font-size: 16px; margin: 20px 0 36px; line-height: 1.7;">現在申請，14 天內完整體驗所有功能。<br />滿意再付費，不滿意不收費。</p>
+    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+      <a href="https://ypfops.com" class="btn-hero">立即申請試用 →</a>
+      <a href="mailto:jhuan0019tw@gmail.com" class="btn-hero-ghost">聯絡業務詢問</a>
+    </div>
+    <p style="font-size: 13px; color: var(--muted); margin-top: 24px;">有任何問題？歡迎 Email：jhuan0019tw@gmail.com</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">YPF<span>OPS</span></div>
+  <ul class="footer-links">
+    <li><a href="#features">功能介紹</a></li>
+    <li><a href="#pricing">方案價格</a></li>
+    <li><a href="https://ypfops.com">登入系統</a></li>
+    <li><a href="mailto:jhuan0019tw@gmail.com">聯絡我們</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 YPFOPS · YPF Operations System</div>
+</footer>
+
+</body>
+</html>
