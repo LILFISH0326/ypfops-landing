@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
 <style>
+  /* Font fallback if Google Fonts fails */
+  @font-face {
+    font-family: 'Syne';
+    src: local('Arial Black'), local('Impact');
+    font-weight: 800;
+  }
+
+<style>
   :root {
     --navy: #0a1628;
     --navy2: #0f2040;
@@ -28,7 +36,7 @@
   html { scroll-behavior: smooth; }
 
   body {
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
     background: var(--navy);
     color: var(--white);
     overflow-x: hidden;
@@ -74,7 +82,7 @@
   }
 
   .logo {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: 22px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -174,7 +182,7 @@
   .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
 
   .hero h1 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: clamp(40px, 7vw, 80px);
     font-weight: 800;
     line-height: 1.05;
@@ -246,7 +254,7 @@
 
   .stat { text-align: center; }
   .stat-num {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: 36px;
     font-weight: 800;
     background: var(--gradient);
@@ -267,7 +275,7 @@
     margin-bottom: 16px;
   }
   .section-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: clamp(28px, 4vw, 48px);
     font-weight: 800;
     letter-spacing: -1px;
@@ -321,7 +329,7 @@
   }
 
   .module-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 8px;
@@ -365,6 +373,7 @@
     border-radius: 20px;
     padding: 36px 32px;
     transition: all 0.3s;
+    overflow: hidden;
   }
 
   .pricing-card.featured {
@@ -386,18 +395,19 @@
   }
 
   .pricing-plan {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 8px;
   }
 
   .pricing-price {
-    font-family: 'Syne', sans-serif;
-    font-size: 48px;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
+    font-size: 36px;
     font-weight: 800;
     margin: 16px 0 4px;
-    line-height: 1;
+    line-height: 1.2;
+    word-break: break-all;
   }
 
   .pricing-price span { font-size: 18px; color: var(--muted); font-weight: 400; }
@@ -499,7 +509,7 @@
   }
 
   .footer-logo {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: 20px;
     font-weight: 800;
   }
@@ -558,7 +568,7 @@
     padding: 16px 20px;
     text-align: left;
     border-bottom: 2px solid var(--border);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -852,9 +862,9 @@
     <p style="color: var(--muted); font-size: 16px; margin: 20px 0 36px; line-height: 1.7;">現在申請，14 天內完整體驗所有功能。<br />滿意再付費，不滿意不收費。</p>
     <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
       <a href="https://ypfops.com" class="btn-hero">立即申請試用 →</a>
-      <a href="mailto:jhuan0019tw@gmail.com" class="btn-hero-ghost">聯絡業務詢問</a>
+      <a href="/cdn-cgi/l/email-protection#d5bfbda0b4bbe5e5e4eca1a295b2b8b4bcb9fbb6bab8" class="btn-hero-ghost">聯絡業務詢問</a>
     </div>
-    <p style="font-size: 13px; color: var(--muted); margin-top: 24px;">有任何問題？歡迎 Email：jhuan0019tw@gmail.com</p>
+    <p style="font-size: 13px; color: var(--muted); margin-top: 24px;">有任何問題？歡迎 Email：<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6ccced3c7c89696979fd2d1e6c1cbc7cfca88c5c9cb">[email&#160;protected]</a></p>
   </div>
 </section>
 
@@ -865,10 +875,4 @@
     <li><a href="#features">功能介紹</a></li>
     <li><a href="#pricing">方案價格</a></li>
     <li><a href="https://ypfops.com">登入系統</a></li>
-    <li><a href="mailto:jhuan0019tw@gmail.com">聯絡我們</a></li>
-  </ul>
-  <div class="footer-copy">© 2025 YPFOPS · YPF Operations System</div>
-</footer>
-
-</body>
-</html>
+    <li><
