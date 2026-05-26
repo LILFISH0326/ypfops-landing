@@ -83,13 +83,15 @@
     align-items: center;
     gap: 10px;
   }
-  .logo span { color: var(--cyan); }
+  .logo-text { white-space: nowrap; }
+  .logo-text .accent { color: var(--cyan); }
   .logo-sub {
     font-size: 12px;
     color: var(--muted);
     font-weight: 400;
     font-family: 'Noto Sans TC', sans-serif;
     letter-spacing: 0;
+    white-space: nowrap;
   }
 
   .nav-links {
@@ -540,11 +542,12 @@
   }
   .pricing-price {
     font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 800;
     margin: 16px 0 4px;
     line-height: 1.2;
-    word-break: break-all;
+    word-break: keep-all;
+    white-space: nowrap;
   }
   .pricing-price span { font-size: 18px; color: var(--muted); font-weight: 400; }
   .pricing-desc { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
@@ -674,7 +677,8 @@
 <!-- Nav -->
 <nav>
   <div class="logo">
-    YPF<span>OPS</span><span class="logo-sub">雲端工廠</span>
+    <span class="logo-text">YPF<span class="accent">OPS</span></span>
+    <span class="logo-sub">雲端工廠</span>
   </div>
   <ul class="nav-links">
     <li><a href="#features">功能模組</a></li>
@@ -1020,7 +1024,7 @@
 <!-- Footer -->
 <footer>
   <div>
-    <div class="footer-logo">YPF<span>OPS</span> 雲端工廠</div>
+    <div class="footer-logo">YPFOPS 雲端工廠</div>
     <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">智慧製造管理系統 · Cloud Factory Management</div>
   </div>
   <ul class="footer-links">
