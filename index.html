@@ -239,7 +239,7 @@
     font-size: clamp(40px, 7vw, 80px);
     font-weight: 800;
     line-height: 1.05;
-    letter-spacing: -2px;
+    letter-spacing: -0.5px;
     margin-bottom: 24px;
     animation: fadeUp 0.6s 0.1s ease both;
     color: #f8fafc;
@@ -356,9 +356,9 @@
   .section-title {
     font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
     font-size: clamp(28px, 4vw, 48px);
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: 0px;
+    line-height: 1.15;
     margin-bottom: 16px;
   }
   .section-sub {
@@ -430,8 +430,8 @@
 
   .module-icon { font-size: 32px; margin-bottom: 16px; display: block; position: relative; }
   .module-title {
-    font-family: 'Syne', 'Arial Black', 'Microsoft JhengHei', sans-serif;
-    font-size: 18px;
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    font-size: 17px;
     font-weight: 700;
     margin-bottom: 8px;
     position: relative;
@@ -674,8 +674,7 @@
 <!-- Nav -->
 <nav>
   <div class="logo">
-    YPF<span>OPS</span>
-    <span class="logo-sub">雲端工廠</span>
+    YPF<span>OPS</span><span class="logo-sub">雲端工廠</span>
   </div>
   <ul class="nav-links">
     <li><a href="#features">功能模組</a></li>
@@ -1057,25 +1056,33 @@
 
   // ── Scroll reveal ──
   const revealEls = document.querySelectorAll('.reveal, .module-card');
+  const cards = [...document.querySelectorAll('.module-card')];
+
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        // Stagger module cards
         if (entry.target.classList.contains('module-card')) {
-          const cards = [...document.querySelectorAll('.module-card')];
           const idx = cards.indexOf(entry.target);
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, (idx % 4) * 80);
+          setTimeout(() => entry.target.classList.add('visible'), (idx % 4) * 70);
         } else {
           entry.target.classList.add('visible');
         }
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12 });
+  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
 
-  revealEls.forEach(el => observer.observe(el));
+  revealEls.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    // Elements already in or above viewport → reveal instantly, no animation
+    if (rect.top < window.innerHeight + 100) {
+      el.style.transition = 'none';
+      el.classList.add('visible');
+      requestAnimationFrame(() => { el.style.transition = ''; });
+    } else {
+      observer.observe(el);
+    }
+  });
 
   // ── Smooth active nav highlight ──
   const sections = document.querySelectorAll('section[id]');
