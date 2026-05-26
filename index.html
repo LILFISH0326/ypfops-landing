@@ -1000,7 +1000,7 @@ footer {
     <button onclick="closeContact()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;line-height:1;">✕</button>
     <div style="font-size:11px;font-weight:700;color:#06b6d4;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">聯絡我們 · Contact</div>
     <h3 style="font-size:22px;font-weight:800;margin-bottom:6px;font-family:'Noto Sans TC',sans-serif;">想了解更多？</h3>
-    <p style="font-size:13px;color:#94a3b8;margin-bottom:24px;font-family:'Noto Sans TC',sans-serif;">填寫後將直接開啟您的 Email，發送給我們的業務團隊。</p>
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:24px;font-family:'Noto Sans TC',sans-serif;">填寫後將開啟 Gmail 撰寫視窗，內容自動帶入，直接送出即可。</p>
     <div style="display:flex;flex-direction:column;gap:14px;">
       <div>
         <label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px;font-family:'Noto Sans TC',sans-serif;">您的姓名 *</label>
@@ -1015,7 +1015,7 @@ footer {
         <textarea id="cMsg" rows="4" placeholder="例如：公司有 15 名員工，想了解專業方案費用與試用方式…" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#f1f5f9;font-size:14px;outline:none;resize:vertical;font-family:'Noto Sans TC',sans-serif;"></textarea>
       </div>
       <button onclick="submitContact()" style="padding:13px;background:linear-gradient(135deg,#1a56db,#06b6d4);border:none;border-radius:10px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
-        📧 開啟 Email 發送詢問
+        📧 開啟 Gmail 發送詢問
       </button>
       <p style="font-size:12px;color:#64748b;text-align:center;font-family:'Noto Sans TC',sans-serif;">將寄至 ypfops@gmail.com，我們通常在 1 個工作天內回覆</p>
     </div>
@@ -1103,13 +1103,19 @@ function submitContact() {
   const name = document.getElementById('cName').value.trim();
   const company = document.getElementById('cCompany').value.trim();
   const msg = document.getElementById('cMsg').value.trim();
-  if (!name) { alert('請填寫您的姓名'); return; }
-  if (!msg) { alert('請填寫詢問內容'); return; }
+  if (!name) { document.getElementById('cName').focus(); alert('請填寫您的姓名'); return; }
+  if (!msg) { document.getElementById('cMsg').focus(); alert('請填寫詢問內容'); return; }
   const subject = encodeURIComponent(`【YPFOPS 詢問】${name}${company ? ' — ' + company : ''}`);
   const body = encodeURIComponent(
     `您好，我是 ${name}${company ? '，來自 ' + company : ''}。\n\n${msg}\n\n---\n此信由 YPFOPS 官網聯絡表單送出`
   );
-  window.location.href = `mailto:ypfops@gmail.com?subject=${subject}&body=${body}`;
+  // 優先開 Gmail 網頁版 Compose（不需要設定郵件程式）
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=ypfops%40gmail.com&su=${subject}&body=${body}`;
+  const win = window.open(gmailUrl, '_blank');
+  // 若瀏覽器封鎖彈出視窗，退回 mailto
+  if (!win || win.closed || typeof win.closed === 'undefined') {
+    window.location.href = `mailto:ypfops@gmail.com?subject=${subject}&body=${body}`;
+  }
   closeContact();
 }
 
